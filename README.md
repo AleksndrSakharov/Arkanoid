@@ -1,1 +1,1 @@
-# Arkanoid
+# Arkanoid, my first game project

@@ -54,18 +54,18 @@ int main()
     //Meteors
     Texture meteorTexture1;
     meteorTexture1.loadFromFile("Image/meteor1.png");
-    Texture meteorTexture2;
-    meteorTexture2.loadFromFile("Image/meteor2.png");
+//    Texture meteorTexture2;
+//    meteorTexture2.loadFromFile("Image/meteor2.png");
     Texture meteorTexture3;
     meteorTexture3.loadFromFile("Image/meteor3.png");
     const int nmeteors = 10;
     Meteor meteors[nmeteors];
-    int meteorType = 1;
+    int meteorType;
     for (int i = 0; i < nmeteors; i++){
-        meteorType = 1 + rand() % 3;
+        meteorType = 1 + rand() % 2;
         if (meteorType == 1) meteors[i].setTextureM(meteorTexture1);
-        if (meteorType == 2) meteors[i].setTextureM(meteorTexture2);
-        if (meteorType == 3) meteors[i].setTextureM(meteorTexture3);
+//        if (meteorType == 2) meteors[i].setTextureM(meteorTexture2);
+        if (meteorType == 2) meteors[i].setTextureM(meteorTexture3);
     }
 
 

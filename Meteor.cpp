@@ -8,7 +8,6 @@ void Meteor::setTextureM(Texture& texture1){
     _TextureObject = texture1;
     _SpaceObject.setSize({static_cast<float>(_TextureObject.getSize().x), static_cast<float>(_TextureObject.getSize().y)});
     _SpaceObject.setTexture(&_TextureObject);
-
 }
 
 void Meteor::move(double& time){
@@ -34,9 +33,9 @@ bool Meteor::collision(FloatRect object){
     return false;
 }
 void Meteor::restart(){
-    float x = static_cast<float>(rand() % 1920 + 1920);
-    float y = static_cast<float>(rand() % 1080);
-    _SpaceObject.setPosition(Vector2f(x, y));
+    float x1 = static_cast<float>(rand() % 1920 + 1920);
+    float y1 = static_cast<float>(rand() % 970);
+    _SpaceObject.setPosition(Vector2f(x1, y1));
     _SpaceObject.setScale(0.35, 0.35);
 
 }

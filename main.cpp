@@ -69,13 +69,14 @@ int main()
     }
 
     //Player's score
-//    Text Score;
-//    Font Score_font;
-//    Score_font.loadFromFile("Font/OffBit-Bold.ttf");
-//    Score.setFont(Score_font);
-//    Score.setFillColor(Color::White);
-//    Score.setCharacterSize(30);
-//    Score.setPosition(1800, 50);
+    Text Score;
+    Font Score_font;
+    Score_font.loadFromFile("Font/OffBit-Bold.ttf");
+    Score.setFont(Score_font);
+    Score.setFillColor(Color::White);
+    Score.setCharacterSize(30);
+    Score.setString("Score");
+    Score.setPosition(1800, 50);
 
     //Animation jet stream
     int countAnim = 1;
@@ -209,7 +210,7 @@ int main()
         for (int i = 0; i < nmeteors; i++) meteors[i].draw(window);
         if (GameOver) window.draw(pboom); else window.draw(player);
         window.draw(herosprite);
-//        window.draw(Score);
+        window.draw(Score);
         window.display();
     }
 

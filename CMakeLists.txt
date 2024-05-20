@@ -16,18 +16,18 @@ add_executable(Arkanoid ${SOURCE_FILES})
 
 
 if(WIN32)
-    set(SFML_ROOT "C:\\SFML-2.6.1")
+    set(SFML_ROOT "C:\\SFML-2.5.1")
     set(SFML_STATIC_LIBRARIES TRUE)
 else()
     include_directories(/usr/local/include)
 endif()
 
 # Поиск компонентов библиотеки
-find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
+find_package(SFML 2.5.1 COMPONENTS graphics window system audio REQUIRED)
 
 if(SFML_FOUND)
     # Добавление headers
     target_include_directories(Arkanoid PRIVATE ${SFML_INCLUDE_DIR})
     # Линковка библиотек
-    target_link_libraries(Arkanoid PRIVATE m sfml-graphics sfml-window sfml-system)
+    target_link_libraries(Arkanoid PRIVATE m sfml-graphics sfml-window sfml-system sfml-audio)
 endif()

@@ -1,12 +1,29 @@
 cmake_minimum_required(VERSION 3.14)
-project(Arkanoid LANGUAGES CXX)
+project(Arkanoid)
 
-include(FetchContent)
-set(BUILD_SHARED_LIBS OFF)
-FETCHCONTENT_DECLARE(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git GIT_TAG 2.5.1)
-FETCHCONTENT_MAKEAVAILABLE(SFML)
 
-set(CMAKE_CXX_STANDARD 17)
-add_executable(main main.cpp
-        main.cpp)
-target_link_libraries(Arkanoid sfml-graphics)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(SOURCE_FILES main.cpp
+        Arkanoid.h
+        Arkanid.cpp
+        Meteor.cpp
+        Meteor.h)
+add_executable(Arkanoid ${SOURCE_FILES})
+
+
+if(WIN32)
+    set(SFML_ROOT "C:\\SFML-2.6.1")
+    set(SFML_STATIC_LIBRARIES TRUE)
+else()
+    include_directories(/usr/local/include)
+endif()
+
+# Поиск компонентов библиотеки
+find_package(SFML 2.6.1 COMPONENTS graphics window system REQUIRED)
+
+if(SFML_FOUND)
+    # Добавление headers
+    target_include_directories(Arkanoid PRIVATE ${SFML_INCLUDE_DIR})
+    # Линковка библиотек
+    target_link_libraries(Arkanoid PRIVATE m sfml-graphics sfml-window sfml-system)
+endif()

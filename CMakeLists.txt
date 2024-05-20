@@ -3,7 +3,7 @@ project(Arkanoid)
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(SOURCE_FILES main.cpp
+add_executable(Arkanoid main.cpp
         Arkanoid.h
         Arkanid.cpp
         Meteor.cpp
@@ -12,7 +12,6 @@ set(SOURCE_FILES main.cpp
         Base_object.cpp
         Alien.cpp
         Alien.h)
-add_executable(Arkanoid ${SOURCE_FILES})
 
 
 if(WIN32)

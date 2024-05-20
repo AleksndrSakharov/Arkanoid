@@ -7,7 +7,11 @@ set(SOURCE_FILES main.cpp
         Arkanoid.h
         Arkanid.cpp
         Meteor.cpp
-        Meteor.h)
+        Meteor.h
+        Base_object.h
+        Base_object.cpp
+        Alien.cpp
+        Alien.h)
 add_executable(Arkanoid ${SOURCE_FILES})
 
 

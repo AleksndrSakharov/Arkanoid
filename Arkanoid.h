@@ -5,6 +5,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Meteor.h"
+#include "Alien.h"
 using namespace sf;
 
 

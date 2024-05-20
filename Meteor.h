@@ -2,25 +2,15 @@
 // Created by 11ale on 18.05.2024.
 //
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "Base_object.h"
 
 using namespace sf;
 
 
 
-class Meteor {
-private:
-    RectangleShape _SpaceObject;
-    Texture _TextureObject;
-public:
-    Meteor();
-    ~Meteor();
+class Meteor : public Base_object{
 
-    void setTextureM(Texture& texture1);
-    void move(double& time);
-    void draw(RenderWindow& window);
-    bool collision(FloatRect object);
-    void restart(); //Set new coords
-    FloatRect getMeteorBounds(); //Position in global coordinates
+public:
+
 };
 

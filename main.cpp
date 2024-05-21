@@ -74,9 +74,18 @@ int main()
     Score_font.loadFromFile("Font/OffBit-Bold.ttf");
     Score.setFont(Score_font);
     Score.setFillColor(Color::White);
-    Score.setCharacterSize(30);
+    Score.setCharacterSize(50);
     Score.setString("Score");
     Score.setPosition(1800, 50);
+    Text ScorePoints;
+    Font ScorePoints_font;
+    ScorePoints.setFont(Score_font);
+    ScorePoints.setFillColor(Color::White);
+    ScorePoints.setCharacterSize(30);
+    ScorePoints.setString("00000");
+    ScorePoints.setPosition(1780, 90);
+    
+    
 
     //Animation jet stream
     int countAnim = 1;

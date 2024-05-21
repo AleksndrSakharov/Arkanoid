@@ -3,6 +3,12 @@
 //
 #include "Base_object.h"
 
+void Base_object::setHp(int hp){
+    _hp = hp;
+    if (hp == 0)
+    restart();
+}
+
 void Base_object::setTextureM(Texture& texture1){
     _TextureObject = texture1;
     _SpaceObject.setSize({static_cast<float>(_TextureObject.getSize().x), static_cast<float>(_TextureObject.getSize().y)});
@@ -18,6 +24,7 @@ Base_object::Base_object(){
     _TextureObject.loadFromFile("Image/meteor1.png");
     _SpaceObject.setSize({455,269});
     _SpaceObject.setTexture(&_TextureObject);
+    _hp = 10;
     restart();
 }
 Base_object::~Base_object(){
@@ -32,6 +39,7 @@ bool Base_object::collision(FloatRect object){
     return false;
 }
 void Base_object::restart(){
+    _hp = 10;
     float x1 = static_cast<float>(rand() % 1920 + 1920);
     float y1 = static_cast<float>(rand() % 970);
     _SpaceObject.setPosition(Vector2f(x1, y1));

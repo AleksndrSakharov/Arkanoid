@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include "Meteor.h"
 #include "Alien.h"
+#include "Gun.h"
 using namespace sf;
 
 

@@ -11,7 +11,9 @@ add_executable(Arkanoid main.cpp
         Base_object.h
         Base_object.cpp
         Alien.cpp
-        Alien.h)
+        Alien.h
+        Gun.cpp
+        Gun.h)
 
 
 if(WIN32)

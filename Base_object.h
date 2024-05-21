@@ -10,12 +10,14 @@ using namespace sf;
 
 class Base_object {
 protected:
+    int _hp;
     RectangleShape _SpaceObject;
     Texture _TextureObject;
 public:
     Base_object();
     ~Base_object();
 
+    virtual void setHp(int hp);
     virtual void setTextureM(Texture& texture1);
     virtual void move(double& time);
     virtual void draw(RenderWindow& window);

@@ -22,7 +22,7 @@ int main()
     bool GameOver = false;
     Vector2f pos;
     Clock clock, clockAnimation, clockAnimationMeteor;
-    double time, timePlayer, timeBackground, timeMeteor;
+    double time, timeGun, timeBackground, timeMeteor;
 
     //Spaceship
     Vector2f moveRec;
@@ -31,6 +31,9 @@ int main()
     RectangleShape player(Vector2f(110, 110));
     player.setTexture(&texturePlayer);
     player.setPosition(Vector2f(100, 540));
+
+    //Gun
+
 
     //Booooom player
     int countAnimBoom = 1;
@@ -76,14 +79,13 @@ int main()
     Score.setFillColor(Color::White);
     Score.setCharacterSize(50);
     Score.setString("Score");
-    Score.setPosition(1800, 50);
+    Score.setPosition(1700, 50);
     Text ScorePoints;
-    Font ScorePoints_font;
     ScorePoints.setFont(Score_font);
     ScorePoints.setFillColor(Color::White);
-    ScorePoints.setCharacterSize(30);
+    ScorePoints.setCharacterSize(40);
     ScorePoints.setString("00000");
-    ScorePoints.setPosition(1780, 90);
+    ScorePoints.setPosition(1698, 110);
     
     
 
@@ -220,6 +222,7 @@ int main()
         if (GameOver) window.draw(pboom); else window.draw(player);
         window.draw(herosprite);
         window.draw(Score);
+        window.draw(ScorePoints);
         window.display();
     }
 

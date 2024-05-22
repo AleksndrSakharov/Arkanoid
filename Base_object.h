@@ -17,11 +17,12 @@ public:
     Base_object();
     ~Base_object();
 
+    virtual int getHp();
     virtual void setHp(int hp);
     virtual void setTextureM(Texture& texture1);
     virtual void move(double& time);
     virtual void draw(RenderWindow& window);
     virtual bool collision(FloatRect object);
     virtual void restart(); //Set new coords
-    virtual FloatRect getMeteorBounds(); //Position in global coordinates
+    virtual FloatRect getGlobalBounds(); //Position in global coordinates
 };

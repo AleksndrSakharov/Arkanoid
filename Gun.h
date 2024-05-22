@@ -14,10 +14,12 @@ protected:
     int _gunCount;
 public:
     Gun();
+    Gun(int dmg, int gunCount, Vector2f pos);
     ~Gun();
-    void lvlUp(int dmg, int gunCount);
+    void deleteBullet(int i);
+    int getBulletCount();
     void move(double& time);
     void draw(RenderWindow& window);
-    bool collision(FloatRect object);
+    bool collision(FloatRect object, int i);
     FloatRect getBulletBounds(int j); //Position in global coordinates
 };

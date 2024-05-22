@@ -3,6 +3,10 @@
 //
 #include "Base_object.h"
 
+int Base_object::getHp() {
+    return _hp;
+}
+
 void Base_object::setHp(int hp){
     _hp = hp;
     if (hp == 0)
@@ -46,6 +50,6 @@ void Base_object::restart(){
     _SpaceObject.setScale(0.35, 0.35);
 
 }
-FloatRect Base_object::getMeteorBounds(){
+FloatRect Base_object::getGlobalBounds(){
     return _SpaceObject.getGlobalBounds();
 }

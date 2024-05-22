@@ -9,6 +9,12 @@ int main()
     //Window
     RenderWindow window(VideoMode(1920, 1080), "Arkanoid");
 
+    //For work in program(parameters)
+    bool GameOver = false;
+    Vector2f pos;
+    Clock clock, clockAnimation, clockAnimationMeteor, clockGenBullets;
+    double time, timeGun, timeBackground, timeMeteor;
+
     //Background
     Texture textureSpace;
     textureSpace.loadFromFile("Image/cosmos.jpg");
@@ -18,12 +24,6 @@ int main()
     gameBackground2.setTexture(&textureSpace);
     gameBackground2.setPosition(Vector2f(1920, 0));
 
-    //For work in program(parameters)
-    bool GameOver = false;
-    Vector2f pos;
-    Clock clock, clockAnimation, clockAnimationMeteor;
-    double time, timeGun, timeBackground, timeMeteor;
-
     //Spaceship
     Vector2f moveRec;
     Texture texturePlayer;
@@ -31,8 +31,6 @@ int main()
     RectangleShape player(Vector2f(110, 110));
     player.setTexture(&texturePlayer);
     player.setPosition(Vector2f(100, 540));
-
-    //Gun
 
 
     //Booooom player
@@ -74,6 +72,7 @@ int main()
     //Player's score
     Text Score;
     Font Score_font;
+    long scoreCount = 0;
     Score_font.loadFromFile("Font/OffBit-Bold.ttf");
     Score.setFont(Score_font);
     Score.setFillColor(Color::White);
@@ -86,8 +85,14 @@ int main()
     ScorePoints.setCharacterSize(40);
     ScorePoints.setString("00000");
     ScorePoints.setPosition(1698, 110);
-    
-    
+
+
+    //Gun
+    std::vector<Gun> guns;
+    std::vector<Gun>::iterator itGun;
+    int dmg = 1;
+    int gunCount = 2;
+
 
     //Animation jet stream
     int countAnim = 1;
@@ -108,7 +113,7 @@ int main()
         time = clock.getElapsedTime().asMicroseconds();
         timeBackground = time / 6000;
         timeMeteor = time / 4000;
-//        timePlayer = time / 3000;
+        timeGun = time / 3000;
         clock.restart();
         while (window.pollEvent(event))
         {
@@ -117,10 +122,10 @@ int main()
             //Player control
             switch (event.type) {
                 case Event::KeyPressed:
-                    if (event.key.code == Keyboard::S) moveRec.y = 0.1;
-                    if (event.key.code == Keyboard::W) moveRec.y = -0.1 ;
-                    if (event.key.code == Keyboard::A) moveRec.x = -0.1;
-                    if (event.key.code == Keyboard::D) moveRec.x = 0.1;
+                    if (event.key.code == Keyboard::S) moveRec.y = 0.3;
+                    if (event.key.code == Keyboard::W) moveRec.y = -0.3 ;
+                    if (event.key.code == Keyboard::A) moveRec.x = -0.3;
+                    if (event.key.code == Keyboard::D) moveRec.x = 0.3;
                     break;
                 case Event::KeyReleased:
                     if (event.key.code == Keyboard::S) moveRec.y = 0;
@@ -137,6 +142,10 @@ int main()
         if (GameOver){
             if (clockAnimationMeteor.getElapsedTime() > milliseconds(100)){
                 clockAnimationMeteor.restart();
+                ScorePoints.setString("00000");
+                for (int i = 0; i < guns.size(); i++){
+                    for (int j = 0; j < guns[i].getBulletCount(); j++) guns[i].deleteBullet(j);
+                }
                 if (countAnimBoom == 1) {
                     pboom.setTexture(pboom1Texture);
                 }
@@ -168,29 +177,6 @@ int main()
 
             }
         }else {
-
-
-            //Animation jet stream
-            if (clockAnimation.getElapsedTime() > milliseconds(100)) {
-                clockAnimation.restart();
-                if (countAnim == 1) {
-                    herosprite.setTexture(herotexture1);
-//                herosprite.setRotation(45.f);
-                }
-                if (countAnim == 2) {
-                    herosprite.setTexture(herotexture2);
-//                herosprite.setRotation(45.f);
-                }
-                if (countAnim == 3) {
-                    herosprite.setTexture(herotexture3);
-//                herosprite.setRotation(45.f);
-                }
-                if (countAnim > 3) countAnim = 1;
-                else countAnim++;
-            }
-            herosprite.setPosition(Vector2f(player.getPosition().x - 58, player.getPosition().y + 76));
-
-
             //Background animation
             gameBackground.move(-0.5 * timeBackground, 0);
             pos = gameBackground.getPosition();
@@ -198,6 +184,83 @@ int main()
             gameBackground2.move(-0.5 * timeBackground, 0);
             pos = gameBackground2.getPosition();
             if (pos.x < -1920) gameBackground2.setPosition(1920, pos.y);
+
+            //Make gun
+            Gun gun = Gun(dmg, gunCount, Vector2f (player.getPosition().x + 30, player.getPosition().y + 50));
+            if (clockGenBullets.getElapsedTime() > milliseconds(200)){
+                clockGenBullets.restart();
+                guns.push_back(gun);
+            }
+
+            //Move bullets
+            for (int i = 0; i < guns.size(); i++){
+                guns[i].move(timeGun);
+                for (int j = 0; j < guns[i].getBulletCount(); j++){
+                    for (int l = 0; l < nmeteors; l++) {
+                        if (guns[i].collision(meteors[l].getGlobalBounds(), j)){
+                            if (meteors[l].getHp() - dmg == 0) scoreCount += 100;
+                            meteors[l].setHp(meteors[l].getHp() - dmg);
+                            guns[i].deleteBullet(j);
+                        }
+                    }
+                }
+                itGun = guns.begin()+i;
+                if (guns[i].getBulletCount() == 0) guns.erase(itGun);
+            }
+
+            //Score update
+            int scoreCountCopy = scoreCount;
+            int countZeros = 5;
+            std::string scoreStr = "";
+//            std::cout << scoreCount << std::endl;
+            std::string scoreStrZeroes = "";
+            while (scoreCountCopy >= 1){
+                countZeros--;
+                switch (scoreCountCopy % 10) {
+                    case 1:
+                        scoreStr += "1";
+                    case 2:
+                        scoreStr += "2";
+                    case 3:
+                        scoreStr += "3";
+                    case 4:
+                        scoreStr += "4";
+                    case 5:
+                        scoreStr += "5";
+                    case 6:
+                        scoreStr += "6";
+                    case 7:
+                        scoreStr += "7";
+                    case 8:
+                        scoreStr += "8";
+                    case 9:
+                        scoreStr += "9";
+                    case 0:
+                        scoreStr += "0";
+                }
+                scoreCountCopy /= 10;
+            }
+
+            for (int i = 0; i < countZeros; i++) scoreStrZeroes += "0";
+            std::cout << scoreStrZeroes + scoreStr << std::endl;
+            ScorePoints.setString(scoreStrZeroes + scoreStr);
+
+            //Animation jet stream
+            if (clockAnimation.getElapsedTime() > milliseconds(100)) {
+                clockAnimation.restart();
+                if (countAnim == 1) {
+                    herosprite.setTexture(herotexture1);
+                }
+                if (countAnim == 2) {
+                    herosprite.setTexture(herotexture2);
+                }
+                if (countAnim == 3) {
+                    herosprite.setTexture(herotexture3);
+                }
+                if (countAnim > 3) countAnim = 1;
+                else countAnim++;
+            }
+            herosprite.setPosition(Vector2f(player.getPosition().x - 58, player.getPosition().y + 76));
 
             //Move meteor
             for (int i = 0; i < nmeteors; i++) {
@@ -218,6 +281,7 @@ int main()
         window.clear();
         window.draw(gameBackground2);
         window.draw(gameBackground);
+        for (int i = 0; i < guns.size(); i++) guns[i].draw(window);
         for (int i = 0; i < nmeteors; i++) meteors[i].draw(window);
         if (GameOver) window.draw(pboom); else window.draw(player);
         window.draw(herosprite);

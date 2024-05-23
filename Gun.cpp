@@ -50,7 +50,7 @@ void Gun::move(double &time) {
     std::vector<RectangleShape>::iterator it;
     for (int i = 0; i < _bullet.size(); i++) {
         it = _bullet.begin()+i;
-        _bullet[i].move(static_cast<float>(1.2*time), 0);
+        _bullet[i].move(static_cast<float>(3*time), 0);
         if (_bullet[i].getPosition().x > 2000) _bullet.erase(it);
     }
 }

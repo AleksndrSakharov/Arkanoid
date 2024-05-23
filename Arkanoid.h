@@ -3,6 +3,8 @@
 //
 #pragma once
 #include <iostream>
+#include <algorithm>
+#include <string>
 #include <SFML/Graphics.hpp>
 #include "Meteor.h"
 #include "Alien.h"

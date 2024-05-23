@@ -65,7 +65,6 @@ int main()
     for (int i = 0; i < nmeteors; i++){
         meteorType = 1 + rand() % 2;
         if (meteorType == 1) meteors[i].setTextureM(meteorTexture1);
-//        if (meteorType == 2) meteors[i].setTextureM(meteorTexture2);
         if (meteorType == 2) meteors[i].setTextureM(meteorTexture3);
     }
 
@@ -73,6 +72,7 @@ int main()
     Text Score;
     Font Score_font;
     long scoreCount = 0;
+    int countLvlUp = 1;
     Score_font.loadFromFile("Font/OffBit-Bold.ttf");
     Score.setFont(Score_font);
     Score.setFillColor(Color::White);
@@ -92,6 +92,10 @@ int main()
     std::vector<Gun>::iterator itGun;
     int dmg = 1;
     int gunCount = 2;
+    int lastIt = 0;
+    int thisIt = 0;
+    float gunUpScale_x = 30;
+    float gunUpScale_y = 50;
 
 
     //Animation jet stream
@@ -122,10 +126,10 @@ int main()
             //Player control
             switch (event.type) {
                 case Event::KeyPressed:
-                    if (event.key.code == Keyboard::S) moveRec.y = 0.3;
-                    if (event.key.code == Keyboard::W) moveRec.y = -0.3 ;
-                    if (event.key.code == Keyboard::A) moveRec.x = -0.3;
-                    if (event.key.code == Keyboard::D) moveRec.x = 0.3;
+                    if (event.key.code == Keyboard::S) moveRec.y = 0.1;
+                    if (event.key.code == Keyboard::W) moveRec.y = -0.1;
+                    if (event.key.code == Keyboard::A) moveRec.x = -0.1;
+                    if (event.key.code == Keyboard::D) moveRec.x = 0.1;
                     break;
                 case Event::KeyReleased:
                     if (event.key.code == Keyboard::S) moveRec.y = 0;
@@ -142,7 +146,6 @@ int main()
         if (GameOver){
             if (clockAnimationMeteor.getElapsedTime() > milliseconds(100)){
                 clockAnimationMeteor.restart();
-                ScorePoints.setString("00000");
                 for (int i = 0; i < guns.size(); i++){
                     for (int j = 0; j < guns[i].getBulletCount(); j++) guns[i].deleteBullet(j);
                 }
@@ -170,6 +173,13 @@ int main()
                 countAnimBoom++;
                 if (countAnimBoom > 8){
                     countAnimBoom = 1;
+                    scoreCount = 0;
+                    ScorePoints.setString("00000");
+                    dmg = 1;
+                    gunCount = 2;
+                    gunUpScale_y = 50;
+                    gunUpScale_x = 30;
+                    countLvlUp = 1;
                     GameOver = false;
                     player.setPosition(Vector2f(100, 540));
                     for (int i = 0; i < nmeteors; i++) meteors[i].restart();
@@ -186,7 +196,7 @@ int main()
             if (pos.x < -1920) gameBackground2.setPosition(1920, pos.y);
 
             //Make gun
-            Gun gun = Gun(dmg, gunCount, Vector2f (player.getPosition().x + 30, player.getPosition().y + 50));
+            Gun gun = Gun(dmg, gunCount, Vector2f (player.getPosition().x + gunUpScale_x, player.getPosition().y + gunUpScale_y));
             if (clockGenBullets.getElapsedTime() > milliseconds(200)){
                 clockGenBullets.restart();
                 guns.push_back(gun);
@@ -198,7 +208,10 @@ int main()
                 for (int j = 0; j < guns[i].getBulletCount(); j++){
                     for (int l = 0; l < nmeteors; l++) {
                         if (guns[i].collision(meteors[l].getGlobalBounds(), j)){
-                            if (meteors[l].getHp() - dmg == 0) scoreCount += 100;
+                            if (meteors[l].getHp() - dmg == 0) {
+                                scoreCount += 100;
+                                thisIt++;
+                            }
                             meteors[l].setHp(meteors[l].getHp() - dmg);
                             guns[i].deleteBullet(j);
                         }
@@ -209,41 +222,52 @@ int main()
             }
 
             //Score update
-            int scoreCountCopy = scoreCount;
-            int countZeros = 5;
-            std::string scoreStr = "";
-//            std::cout << scoreCount << std::endl;
-            std::string scoreStrZeroes = "";
-            while (scoreCountCopy >= 1){
-                countZeros--;
-                switch (scoreCountCopy % 10) {
-                    case 1:
-                        scoreStr += "1";
-                    case 2:
-                        scoreStr += "2";
-                    case 3:
-                        scoreStr += "3";
-                    case 4:
-                        scoreStr += "4";
-                    case 5:
-                        scoreStr += "5";
-                    case 6:
-                        scoreStr += "6";
-                    case 7:
-                        scoreStr += "7";
-                    case 8:
-                        scoreStr += "8";
-                    case 9:
-                        scoreStr += "9";
-                    case 0:
-                        scoreStr += "0";
+            if (lastIt != thisIt){
+                lastIt = thisIt;
+                int scoreCountCopy = scoreCount;
+                int countZeros = 5;
+                std::string scoreStr = "";
+                std::string scoreStrZeroes = "";
+
+                while (scoreCountCopy != 0){
+                    countZeros--;
+                    if (scoreCountCopy % 10 == 0) scoreStr+= "0";
+                    if (scoreCountCopy % 10 == 1) scoreStr+= "1";
+                    if (scoreCountCopy % 10 == 2) scoreStr+= "2";
+                    if (scoreCountCopy % 10 == 3) scoreStr+= "3";
+                    if (scoreCountCopy % 10 == 4) scoreStr+= "4";
+                    if (scoreCountCopy % 10 == 5) scoreStr+= "5";
+                    if (scoreCountCopy % 10 == 6) scoreStr+= "6";
+                    if (scoreCountCopy % 10 == 7) scoreStr+= "7";
+                    if (scoreCountCopy % 10 == 8) scoreStr+= "8";
+                    if (scoreCountCopy % 10 == 9) scoreStr+= "9";
+                    scoreCountCopy /= 10;
                 }
-                scoreCountCopy /= 10;
+                std::reverse(scoreStr.begin(), scoreStr.end());
+                for (int i = 0; i < countZeros; i++) scoreStrZeroes += "0";
+                ScorePoints.setString(scoreStrZeroes + scoreStr);
             }
 
-            for (int i = 0; i < countZeros; i++) scoreStrZeroes += "0";
-            std::cout << scoreStrZeroes + scoreStr << std::endl;
-            ScorePoints.setString(scoreStrZeroes + scoreStr);
+            //Lvl up
+            if (scoreCount >= 10000  && countLvlUp == 3){
+                dmg++;
+                gunCount++;
+                countLvlUp++;
+                gunUpScale_y -= 7;
+            }
+            else if (scoreCount >= 500 && countLvlUp == 2){
+                dmg++;
+                gunCount++;
+                countLvlUp++;
+                gunUpScale_y -= 7;
+            }
+            else if (scoreCount >= 300 && countLvlUp == 1){
+                dmg++;
+                gunCount++;
+                gunUpScale_y -= 7;
+                countLvlUp++;
+            }
+
 
             //Animation jet stream
             if (clockAnimation.getElapsedTime() > milliseconds(100)) {

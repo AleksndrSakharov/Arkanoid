@@ -9,7 +9,7 @@ int Base_object::getHp() {
 
 void Base_object::setHp(int hp){
     _hp = hp;
-    if (hp == 0)
+    if (hp <= 0)
     restart();
 }
 

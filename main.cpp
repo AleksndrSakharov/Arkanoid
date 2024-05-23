@@ -91,7 +91,7 @@ int main()
     std::vector<Gun> guns;
     std::vector<Gun>::iterator itGun;
     int dmg = 1;
-    int gunCount = 2;
+    int gunCount = 1;
     int lastIt = 0;
     int thisIt = 0;
     float gunUpScale_x = 30;
@@ -176,7 +176,7 @@ int main()
                     scoreCount = 0;
                     ScorePoints.setString("00000");
                     dmg = 1;
-                    gunCount = 2;
+                    gunCount = 1;
                     gunUpScale_y = 50;
                     gunUpScale_x = 30;
                     countLvlUp = 1;
@@ -197,7 +197,7 @@ int main()
 
             //Make gun
             Gun gun = Gun(dmg, gunCount, Vector2f (player.getPosition().x + gunUpScale_x, player.getPosition().y + gunUpScale_y));
-            if (clockGenBullets.getElapsedTime() > milliseconds(200)){
+            if (clockGenBullets.getElapsedTime() > milliseconds(300)){
                 clockGenBullets.restart();
                 guns.push_back(gun);
             }
@@ -207,8 +207,8 @@ int main()
                 guns[i].move(timeGun);
                 for (int j = 0; j < guns[i].getBulletCount(); j++){
                     for (int l = 0; l < nmeteors; l++) {
-                        if (guns[i].collision(meteors[l].getGlobalBounds(), j)){
-                            if (meteors[l].getHp() - dmg == 0) {
+                        if (guns[i].collision(meteors[l].getGlobalBounds(), j)){\
+                            if (meteors[l].getHp() - dmg <= 0) {
                                 scoreCount += 100;
                                 thisIt++;
                             }
@@ -249,22 +249,25 @@ int main()
             }
 
             //Lvl up
-            if (scoreCount >= 10000  && countLvlUp == 3){
+            if (scoreCount >= 99999) GameOver = true;
+            else if (scoreCount >= 10000  && countLvlUp == 4){
+                gunCount++;
+                countLvlUp++;
+                gunUpScale_y -= 7;
+            }
+            else if (scoreCount >= 2000 && countLvlUp == 3){
                 dmg++;
                 gunCount++;
                 countLvlUp++;
                 gunUpScale_y -= 7;
             }
-            else if (scoreCount >= 500 && countLvlUp == 2){
-                dmg++;
+            else if (scoreCount >= 1000 && countLvlUp == 2){
                 gunCount++;
+                gunUpScale_y -= 7;
                 countLvlUp++;
-                gunUpScale_y -= 7;
             }
-            else if (scoreCount >= 300 && countLvlUp == 1){
-                dmg++;
+            else if (scoreCount >= 500 && countLvlUp == 1){
                 gunCount++;
-                gunUpScale_y -= 7;
                 countLvlUp++;
             }
 

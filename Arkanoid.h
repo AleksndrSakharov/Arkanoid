@@ -8,7 +8,7 @@
 #include <SFML/Graphics.hpp>
 #include "Meteor.h"
 #include "Alien.h"
-#include "Gun.h"
+#include "Gun_alien.h"
 using namespace sf;
 
 

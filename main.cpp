@@ -12,8 +12,8 @@ int main()
     //For work in program(parameters)
     bool GameOver = false;
     Vector2f pos;
-    Clock clock, clockAnimation, clockAnimationMeteor, clockGenBullets;
-    double time, timeGun, timeBackground, timeMeteor;
+    Clock clock, clockAnimation, clockAnimationMeteor, clockGenBullets, clockAliens, clockGenBulletsAlien;
+    double time, timeGun, timeBackground, timeMeteor, timeAliens, timeGunAlien;
 
     //Background
     Texture textureSpace;
@@ -55,8 +55,6 @@ int main()
     //Meteors
     Texture meteorTexture1;
     meteorTexture1.loadFromFile("Image/meteor1.png");
-//    Texture meteorTexture2;
-//    meteorTexture2.loadFromFile("Image/meteor2.png");
     Texture meteorTexture3;
     meteorTexture3.loadFromFile("Image/meteor3.png");
     const int nmeteors = 10;
@@ -97,6 +95,10 @@ int main()
     float gunUpScale_x = 30;
     float gunUpScale_y = 50;
 
+    //Gun alien
+    std::vector<Gun_alien> gunsAlien;
+    std::vector<Gun_alien>::iterator itGunAlien;
+
 
     //Animation jet stream
     int countAnim = 1;
@@ -110,11 +112,21 @@ int main()
     herosprite.setTexture(herotexture1);
     herosprite.setRotation(-90.f);
 
+    //Alien
+    Texture alienTexture;
+    alienTexture.loadFromFile("Image/alien.png");
+    std::vector <Alien*> aliens;
+    std::vector <Alien*>::iterator itAliens;
+    std::vector <int> directionAlien;
+    std::vector <int>::iterator itDir;
+
     //Game
     while (window.isOpen())
     {
         Event event;
         time = clock.getElapsedTime().asMicroseconds();
+        timeGunAlien = time / 3000;
+        timeAliens = time / 3000;
         timeBackground = time / 6000;
         timeMeteor = time / 4000;
         timeGun = time / 3000;
@@ -146,8 +158,18 @@ int main()
         if (GameOver){
             if (clockAnimationMeteor.getElapsedTime() > milliseconds(100)){
                 clockAnimationMeteor.restart();
+                herosprite.setPosition(-1000,-1000);
                 for (int i = 0; i < guns.size(); i++){
                     for (int j = 0; j < guns[i].getBulletCount(); j++) guns[i].deleteBullet(j);
+                }
+                for (int i = 0; i < gunsAlien.size(); i++){
+                    for (int j = 0; j < gunsAlien[i].getBulletCount(); j++) gunsAlien[i].deleteBullet(j);
+                }
+                for (int i = 0; i < aliens.size(); i++){
+                    itAliens = aliens.begin()+i;
+                    itDir = directionAlien.begin()+i;
+                    aliens.erase(itAliens);
+                    directionAlien.erase(itDir);
                 }
                 if (countAnimBoom == 1) {
                     pboom.setTexture(pboom1Texture);
@@ -195,11 +217,42 @@ int main()
             pos = gameBackground2.getPosition();
             if (pos.x < -1920) gameBackground2.setPosition(1920, pos.y);
 
+            //Make Alien
+            if (clockAliens.getElapsedTime() > milliseconds(7000)){
+                clockAliens.restart();
+                Alien* alien = new Alien;
+                alien->setTextureM(alienTexture);
+                aliens.push_back(alien);
+                directionAlien.push_back(1);
+            }
+
+
             //Make gun
-            Gun gun = Gun(dmg, gunCount, Vector2f (player.getPosition().x + gunUpScale_x, player.getPosition().y + gunUpScale_y));
             if (clockGenBullets.getElapsedTime() > milliseconds(300)){
                 clockGenBullets.restart();
+                Gun gun = Gun(dmg, gunCount, Vector2f (player.getPosition().x + gunUpScale_x, player.getPosition().y + gunUpScale_y));
                 guns.push_back(gun);
+            }
+
+            //Make gun alien
+            if (clockGenBulletsAlien.getElapsedTime() > milliseconds(5000)){
+                clockGenBulletsAlien.restart();
+                for (int i = 0; i < aliens.size(); i++) {
+                    Gun_alien gunA = Gun_alien(1, 1, Vector2f(aliens[i]->getPosition().x + gunUpScale_x, aliens[i]->getPosition().y + gunUpScale_y));
+                    gunsAlien.push_back(gunA);
+                }
+            }
+
+            //Move Alien
+            for (int i = 0; i < aliens.size(); i++){
+                if (aliens[i]->getPosition_y() >= 970 || aliens[i]->getPosition_y() <= 200) directionAlien[i] *= -1;
+                aliens[i]->move(timeAliens, directionAlien[i]);
+                if (aliens[i]->collision(player.getGlobalBounds())){
+                    pboom.setPosition(player.getPosition().x, player.getPosition().y - 100);
+                    herosprite.setPosition(-1000,-1000);
+                    GameOver = true;
+                    break;
+                }
             }
 
             //Move bullets
@@ -207,18 +260,49 @@ int main()
                 guns[i].move(timeGun);
                 for (int j = 0; j < guns[i].getBulletCount(); j++){
                     for (int l = 0; l < nmeteors; l++) {
-                        if (guns[i].collision(meteors[l].getGlobalBounds(), j)){\
+                        if (guns[i].collision(meteors[l].getGlobalBounds(), j)){
+                            guns[i].deleteBullet(j);
                             if (meteors[l].getHp() - dmg <= 0) {
                                 scoreCount += 100;
                                 thisIt++;
                             }
                             meteors[l].setHp(meteors[l].getHp() - dmg);
+                        }
+                    }
+                    for (int l = 0; l < aliens.size(); l++) {
+                        if (guns[i].collision(aliens[l]->getGlobalBounds(), j)){
+                            itAliens = aliens.begin()+l;
+                            itDir = directionAlien.begin()+l;
                             guns[i].deleteBullet(j);
+                            if (aliens[l]->getHp() - dmg <= 0) {
+                                scoreCount += 300;
+                                thisIt++;
+//                                delete aliens[i];
+                                aliens.erase(itAliens);
+                                directionAlien.erase(itDir);
+                            }
+                            aliens[l]->setHp(aliens[l]->getHp() - dmg);
                         }
                     }
                 }
                 itGun = guns.begin()+i;
                 if (guns[i].getBulletCount() == 0) guns.erase(itGun);
+            }
+
+            //Move bullets alien
+            for (int i = 0; i < gunsAlien.size(); i++){
+                gunsAlien[i].move(timeGunAlien);
+                for (int j = 0; j < gunsAlien[i].getBulletCount(); j++){
+                    if (gunsAlien[i].collision(player.getGlobalBounds(), j)){
+                        gunsAlien[i].deleteBullet(j);
+                        pboom.setPosition(player.getPosition().x, player.getPosition().y - 100);
+                        herosprite.setPosition(-1000,-1000);
+                        GameOver = true;
+                        break;
+                    }
+                }
+                itGunAlien = gunsAlien.begin()+i;
+                if (gunsAlien[i].getBulletCount() == 0) gunsAlien.erase(itGunAlien);
             }
 
             //Score update
@@ -293,9 +377,9 @@ int main()
             for (int i = 0; i < nmeteors; i++) {
                 meteors[i].move(timeMeteor);
                 if (meteors[i].collision(player.getGlobalBounds())){
-                    GameOver = true;
                     pboom.setPosition(player.getPosition().x, player.getPosition().y - 100);
                     herosprite.setPosition(-1000,-1000);
+                    GameOver = true;
                     break;
                 }
             }
@@ -309,7 +393,9 @@ int main()
         window.draw(gameBackground2);
         window.draw(gameBackground);
         for (int i = 0; i < guns.size(); i++) guns[i].draw(window);
+        for (int i = 0; i < gunsAlien.size(); i++) gunsAlien[i].draw(window);
         for (int i = 0; i < nmeteors; i++) meteors[i].draw(window);
+        for (int i = 0; i < aliens.size(); i++) aliens[i]->draw(window);
         if (GameOver) window.draw(pboom); else window.draw(player);
         window.draw(herosprite);
         window.draw(Score);

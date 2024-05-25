@@ -12,7 +12,7 @@ Gun::Gun() {
         _bullet.push_back(bullet);
         _bullet[i].setSize(Vector2f(10, 4));
         _bullet[i].setFillColor(Color::White);
-        _bullet[i].setPosition(Vector2f(100, 540));
+        _bullet[i].setPosition(Vector2f(0, 0));
     }
 }
 

@@ -110,8 +110,8 @@ int main()
     //Gun
     std::vector<Gun> guns;
     std::vector<Gun>::iterator itGun;
-    int dmg = 1;
-    int gunCount = 1;
+    int dmg = 3;
+    int gunCount = 5;
     int lastIt = 0;
     int thisIt = 0;
     float gunUpScale_x = 30;
@@ -124,7 +124,6 @@ int main()
     //Gun boss
     std::vector<Gun_boss> gunsBoss;
     std::vector<Gun_boss>::iterator itGunBoss;
-    int lvlUpBoss = 0;
 
 
     //Animation jet stream
@@ -276,7 +275,7 @@ int main()
 
 
             //Make gun boss
-            if (clockGenBulletsBoss.getElapsedTime() > milliseconds(2000)){
+            if (clockGenBulletsBoss.getElapsedTime() > milliseconds(3000)){
                 clockGenBulletsBoss.restart();
                 Gun_boss gunB1 = Gun_boss(1, 1, Vector2f(bossAlien.getPosition().x + 445, bossAlien.getPosition().y + 180));
                 gunsBoss.push_back(gunB1);
@@ -284,8 +283,7 @@ int main()
                 gunsBoss.push_back(gunB2);
                 Gun_boss gunB3 = Gun_boss(1, 1, Vector2f(bossAlien.getPosition().x + 340, bossAlien.getPosition().y + 520));
                 gunsBoss.push_back(gunB3);
-                lvlUpBoss++;
-                if (lvlUpBoss >= 30){
+                if (bossAlien.getHp() <= 5000){
                     Gun_boss gunB4 = Gun_boss(1, 1, Vector2f(bossAlien.getPosition().x + 770, bossAlien.getPosition().y + 260));
                     gunsBoss.push_back(gunB4);
                     Gun_boss gunB5 = Gun_boss(1, 1, Vector2f(bossAlien.getPosition().x + 770, bossAlien.getPosition().y + 780));
@@ -301,7 +299,6 @@ int main()
                         gunsBoss[i].deleteBullet(j);
                         pboom.setPosition(player.getPosition().x, player.getPosition().y - 100);
                         herosprite.setPosition(-1000,-1000);
-                        lvlUpBoss = 0;
                         BossFight = false;
                         GameOver = true;
                         break;
@@ -336,7 +333,6 @@ int main()
                         if (bossAlien.getHp() - dmg <= 0) {
                             scoreCount = 99999;
                             hpBarScore = 0;
-                            lvlUpBoss = 0;
                             ScorePoints.setString("99999");
                             bossActivate = false;
                             BossFight = false;
@@ -356,7 +352,6 @@ int main()
             if (bossAlien.collision(player.getGlobalBounds())){
                 pboom.setPosition(player.getPosition().x, player.getPosition().y - 100);
                 herosprite.setPosition(-1000,-1000);
-                lvlUpBoss = 0;
                 BossFight = false;
                 GameOver = true;
                 break;
@@ -425,7 +420,6 @@ int main()
                 }
                 countAnimBoom++;
                 if (countAnimBoom > 10){
-                    pboom.setScale(0.5,0.5);
                     countAnimBoom = 1;
                     scoreCount = 0;
                     ScorePoints.setString("00000");

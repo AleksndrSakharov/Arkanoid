@@ -7,7 +7,7 @@
 Boss_alien::Boss_alien() {
     _TextureObject.loadFromFile("Image/boss_alien.png");
     _SpaceObject.setTexture(_TextureObject);
-    _hp = 15000;
+    _hp = 10000;
 }
 
 int Boss_alien::getHp() {
@@ -47,7 +47,7 @@ void Boss_alien::setTextureM(sf::Texture &texture1) {
 }
 
 void Boss_alien::restart() {
-    _hp = 15000;
+    _hp = 10000;
     float x1 = static_cast<float>(2000);
     float y1 = static_cast<float>(100);
     _SpaceObject.setPosition(Vector2f(x1, y1));

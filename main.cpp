@@ -92,9 +92,9 @@ int main()
     HpBarBoss.setFont(Score_font);
     HpBarBoss.setFillColor(Color::White);
     HpBarBoss.setCharacterSize(50);
-    HpBarBoss.setString("15000/15000");
+    HpBarBoss.setString("10000/10000");
     HpBarBoss.setPosition(800, 100);
-    int hpBarScore = 15000;
+    int hpBarScore = 10000;
 
     
     //Text win
@@ -398,7 +398,7 @@ int main()
                     hpBarScoreCopy /= 10;
                 }
                 std::reverse(hpBarStr.begin(), hpBarStr.end());
-                HpBarBoss.setString(hpBarStr + "/15000");
+                HpBarBoss.setString(hpBarStr + "/10000");
             }
 
             //PlayerMove

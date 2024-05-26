@@ -461,7 +461,7 @@ int main()
 
 
             //Make gun
-            if (clockGenBullets.getElapsedTime() > milliseconds(300)){
+            if (clockGenBullets.getElapsedTime() > milliseconds(200)){
                 clockGenBullets.restart();
                 Gun gun = Gun(dmg, gunCount, Vector2f (player.getPosition().x + gunUpScale_x, player.getPosition().y + gunUpScale_y));
                 guns.push_back(gun);
@@ -567,7 +567,7 @@ int main()
 
             //Lvl up
             if (scoreCount >= 99999) GameOver = true;
-            else if (scoreCount >= 50000  && countLvlUp == 6){
+            else if (scoreCount >= 20000  && countLvlUp == 6){
                 BossFight = true;
                 countLvlUp++;
             }

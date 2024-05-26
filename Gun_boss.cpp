@@ -34,8 +34,8 @@ void Gun_boss::move(double &time, Vector2f pos) {
     std::vector<RectangleShape>::iterator it;
     for (int i = 0; i < _bullet.size(); i++) {
         it = _bullet.begin()+i;
-        if (_bullet[i].getPosition().y < pos.y + 17) _bullet[i].move(static_cast<float>(-0.9*time), static_cast<float>(0.2 * time));
-        else _bullet[i].move(static_cast<float>(-0.9*time), static_cast<float>(-0.2 * time));
+        if (_bullet[i].getPosition().y < pos.y + 17) _bullet[i].move(static_cast<float>(-0.5*time), static_cast<float>(0.2 * time));
+        else _bullet[i].move(static_cast<float>(-0.5*time), static_cast<float>(-0.2 * time));
         if (_bullet[i].getPosition().x < -100) _bullet.erase(it);
     }
 }

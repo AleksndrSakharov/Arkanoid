@@ -11,6 +11,6 @@ using namespace sf;
 class Meteor : public Base_object{
 
 public:
-
+    void setBossFightPosition();
 };
 

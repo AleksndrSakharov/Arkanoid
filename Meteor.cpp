@@ -3,3 +3,8 @@
 //
 
 #include "Meteor.h"
+
+
+void Meteor::setBossFightPosition(){
+    _SpaceObject.setPosition(-1000, -1000);
+}

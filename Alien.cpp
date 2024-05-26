@@ -27,7 +27,7 @@ float Alien::getPosition_y() {
 
 void Alien::restart() {
     _hp = 15;
-    float x1 = static_cast<float>(rand() % 1920 + 1920);
+    float x1 = static_cast<float>(rand() % 400 + 1920);
     float y1 = static_cast<float>(200 + rand() % 760);
     _SpaceObject.setPosition(Vector2f(x1, y1));
     _SpaceObject.setScale(0.35, 0.35);

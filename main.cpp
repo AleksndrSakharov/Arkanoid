@@ -10,10 +10,12 @@ int main()
     RenderWindow window(VideoMode(1920, 1080), "Arkanoid");
 
     //For work in program(parameters)
+    bool GameWin = false;
+    bool BossFight = false;
     bool GameOver = false;
     Vector2f pos;
-    Clock clock, clockAnimation, clockAnimationMeteor, clockGenBullets, clockAliens, clockGenBulletsAlien;
-    double time, timeGun, timeBackground, timeMeteor, timeAliens, timeGunAlien;
+    Clock clock, clockAnimation, clockAnimationMeteor, clockGenBullets, clockAliens, clockGenBulletsAlien, clockGenBulletsBoss;
+    double time, timeGun, timeBackground, timeMeteor, timeAliens, timeGunAlien, timeBoss, timeGunBoss;
 
     //Background
     Texture textureSpace;
@@ -84,6 +86,26 @@ int main()
     ScorePoints.setString("00000");
     ScorePoints.setPosition(1698, 110);
 
+    
+    //Hp bar boss
+    Text HpBarBoss;
+    HpBarBoss.setFont(Score_font);
+    HpBarBoss.setFillColor(Color::White);
+    HpBarBoss.setCharacterSize(50);
+    HpBarBoss.setString("15000/15000");
+    HpBarBoss.setPosition(800, 100);
+    int hpBarScore = 15000;
+
+    
+    //Text win
+    Text Win;
+    Win.setFont(Score_font);
+    Win.setFillColor(Color::White);
+    Win.setCharacterSize(200);
+    Win.setString("You win!!!");
+    Win.setPosition(600, 400);
+    
+    
 
     //Gun
     std::vector<Gun> guns;
@@ -98,6 +120,11 @@ int main()
     //Gun alien
     std::vector<Gun_alien> gunsAlien;
     std::vector<Gun_alien>::iterator itGunAlien;
+
+    //Gun boss
+    std::vector<Gun_boss> gunsBoss;
+    std::vector<Gun_boss>::iterator itGunBoss;
+    int lvlUpBoss = 0;
 
 
     //Animation jet stream
@@ -119,12 +146,23 @@ int main()
     std::vector <Alien*>::iterator itAliens;
     std::vector <int> directionAlien;
     std::vector <int>::iterator itDir;
+    int upGenAlien = 7000; //timer Generation aliens in milliseconds
+
+    //Alien Boss
+    Texture bossAlienTexture;
+    bossAlienTexture.loadFromFile("Image/boss_alien.png");
+    Boss_alien bossAlien;
+    bossAlien.setTextureM(bossAlienTexture);
+    bool bossActivate = false;
+
 
     //Game
     while (window.isOpen())
     {
         Event event;
         time = clock.getElapsedTime().asMicroseconds();
+        timeGunBoss = time / 3000;
+        timeBoss = time / 3000;
         timeGunAlien = time / 3000;
         timeAliens = time / 3000;
         timeBackground = time / 6000;
@@ -161,9 +199,13 @@ int main()
                 herosprite.setPosition(-1000,-1000);
                 for (int i = 0; i < guns.size(); i++){
                     for (int j = 0; j < guns[i].getBulletCount(); j++) guns[i].deleteBullet(j);
+                    itGun = guns.begin()+i;
+                    if (guns[i].getBulletCount() == 0) guns.erase(itGun);
                 }
                 for (int i = 0; i < gunsAlien.size(); i++){
                     for (int j = 0; j < gunsAlien[i].getBulletCount(); j++) gunsAlien[i].deleteBullet(j);
+                    itGunAlien = gunsAlien.begin()+i;
+                    if (gunsAlien[i].getBulletCount() == 0) gunsAlien.erase(itGunAlien);
                 }
                 for (int i = 0; i < aliens.size(); i++){
                     itAliens = aliens.begin()+i;
@@ -208,7 +250,198 @@ int main()
                 }
 
             }
-        }else {
+        }
+        else if (BossFight){
+            //Delete useless objects for boss fight
+            for (int i = 0; i < gunsAlien.size(); i++){
+                for (int j = 0; j < gunsAlien[i].getBulletCount(); j++) gunsAlien[i].deleteBullet(j);
+                itGunAlien = gunsAlien.begin()+i;
+                if (gunsAlien[i].getBulletCount() == 0) gunsAlien.erase(itGunAlien);
+            }
+            for (int i = 0; i < aliens.size(); i++){
+                itAliens = aliens.begin()+i;
+                itDir = directionAlien.begin()+i;
+                aliens.erase(itAliens);
+                directionAlien.erase(itDir);
+            }
+            for (int i = 0; i < nmeteors; i++){
+                meteors[i].setBossFightPosition();
+            }
+
+            //Make boss
+            if (bossActivate == false){
+                bossActivate = true;
+                bossAlien.restart();
+            }
+
+
+            //Make gun boss
+            if (clockGenBulletsBoss.getElapsedTime() > milliseconds(2000)){
+                clockGenBulletsBoss.restart();
+                Gun_boss gunB1 = Gun_boss(1, 1, Vector2f(bossAlien.getPosition().x + 445, bossAlien.getPosition().y + 180));
+                gunsBoss.push_back(gunB1);
+                Gun_boss gunB2 = Gun_boss(1, 1, Vector2f(bossAlien.getPosition().x + 445, bossAlien.getPosition().y + 880));
+                gunsBoss.push_back(gunB2);
+                Gun_boss gunB3 = Gun_boss(1, 1, Vector2f(bossAlien.getPosition().x + 340, bossAlien.getPosition().y + 520));
+                gunsBoss.push_back(gunB3);
+                lvlUpBoss++;
+                if (lvlUpBoss >= 30){
+                    Gun_boss gunB4 = Gun_boss(1, 1, Vector2f(bossAlien.getPosition().x + 770, bossAlien.getPosition().y + 260));
+                    gunsBoss.push_back(gunB4);
+                    Gun_boss gunB5 = Gun_boss(1, 1, Vector2f(bossAlien.getPosition().x + 770, bossAlien.getPosition().y + 780));
+                    gunsBoss.push_back(gunB5);
+                }
+            }
+
+            //Move bullets boss
+            for (int i = 0; i < gunsBoss.size(); i++){
+                gunsBoss[i].move(timeGunBoss, player.getPosition());
+                for (int j = 0; j < gunsBoss[i].getBulletCount(); j++){
+                    if (gunsBoss[i].collision(player.getGlobalBounds(), j)){
+                        gunsBoss[i].deleteBullet(j);
+                        pboom.setPosition(player.getPosition().x, player.getPosition().y - 100);
+                        herosprite.setPosition(-1000,-1000);
+                        lvlUpBoss = 0;
+                        BossFight = false;
+                        GameOver = true;
+                        break;
+                    }
+                }
+                itGunBoss = gunsBoss.begin()+i;
+                if (gunsBoss[i].getBulletCount() == 0) gunsBoss.erase(itGunBoss);
+            }
+
+
+            //Background animation
+            gameBackground.move(-0.5 * timeBackground, 0);
+            pos = gameBackground.getPosition();
+            if (pos.x < -1920) gameBackground.setPosition(1920, pos.y);
+            gameBackground2.move(-0.5 * timeBackground, 0);
+            pos = gameBackground2.getPosition();
+            if (pos.x < -1920) gameBackground2.setPosition(1920, pos.y);
+
+            //Make gun
+            if (clockGenBullets.getElapsedTime() > milliseconds(200)){
+                clockGenBullets.restart();
+                Gun gun = Gun(dmg, gunCount, Vector2f (player.getPosition().x + gunUpScale_x, player.getPosition().y + gunUpScale_y));
+                guns.push_back(gun);
+            }
+
+            //Move bullets
+            for (int i = 0; i < guns.size(); i++){
+                guns[i].move(timeGun);
+                for (int j = 0; j < guns[i].getBulletCount(); j++){
+                    if (guns[i].collision(bossAlien.getGlobalBounds(), j)){
+                        guns[i].deleteBullet(j);
+                        if (bossAlien.getHp() - dmg <= 0) {
+                            scoreCount = 99999;
+                            hpBarScore = 0;
+                            lvlUpBoss = 0;
+                            ScorePoints.setString("99999");
+                            bossActivate = false;
+                            BossFight = false;
+                            GameWin = true;
+                        }
+                        thisIt++;
+                        hpBarScore -= dmg;
+                        bossAlien.setHp(bossAlien.getHp() - dmg);
+                    }
+                }
+                itGun = guns.begin()+i;
+                if (guns[i].getBulletCount() == 0) guns.erase(itGun);
+            }
+
+            //Move boss
+            bossAlien.move(timeBoss);
+            if (bossAlien.collision(player.getGlobalBounds())){
+                pboom.setPosition(player.getPosition().x, player.getPosition().y - 100);
+                herosprite.setPosition(-1000,-1000);
+                lvlUpBoss = 0;
+                BossFight = false;
+                GameOver = true;
+                break;
+            }
+
+            //Animation jet stream
+            if (clockAnimation.getElapsedTime() > milliseconds(100)) {
+                clockAnimation.restart();
+                if (countAnim == 1) {
+                    herosprite.setTexture(herotexture1);
+                }
+                if (countAnim == 2) {
+                    herosprite.setTexture(herotexture2);
+                }
+                if (countAnim == 3) {
+                    herosprite.setTexture(herotexture3);
+                }
+                if (countAnim > 3) countAnim = 1;
+                else countAnim++;
+            }
+            herosprite.setPosition(Vector2f(player.getPosition().x - 58, player.getPosition().y + 76));
+
+            //Score and HpBar update
+            if (lastIt != thisIt){
+                lastIt = thisIt;
+                int hpBarScoreCopy = hpBarScore;
+                std::string hpBarStr = "";
+                while (hpBarScoreCopy != 0){
+                    if (hpBarScoreCopy % 10 == 0) hpBarStr+= "0";
+                    if (hpBarScoreCopy % 10 == 1) hpBarStr+= "1";
+                    if (hpBarScoreCopy % 10 == 2) hpBarStr+= "2";
+                    if (hpBarScoreCopy % 10 == 3) hpBarStr+= "3";
+                    if (hpBarScoreCopy % 10 == 4) hpBarStr+= "4";
+                    if (hpBarScoreCopy % 10 == 5) hpBarStr+= "5";
+                    if (hpBarScoreCopy % 10 == 6) hpBarStr+= "6";
+                    if (hpBarScoreCopy % 10 == 7) hpBarStr+= "7";
+                    if (hpBarScoreCopy % 10 == 8) hpBarStr+= "8";
+                    if (hpBarScoreCopy % 10 == 9) hpBarStr+= "9";
+                    hpBarScoreCopy /= 10;
+                }
+                std::reverse(hpBarStr.begin(), hpBarStr.end());
+                HpBarBoss.setString(hpBarStr + "/15000");
+            }
+
+            //PlayerMove
+            playerMove(player, moveRec);
+        }
+        else if(GameWin){
+            if (clockAnimation.getElapsedTime() > milliseconds(500)){
+                clockAnimation.restart();
+                herosprite.setPosition(-1000,-1000);
+                for (int i = 0; i < guns.size(); i++){
+                    for (int j = 0; j < guns[i].getBulletCount(); j++) guns[i].deleteBullet(j);
+                    itGun = guns.begin()+i;
+                    if (guns[i].getBulletCount() == 0) guns.erase(itGun);
+                }
+                for (int i = 0; i < gunsAlien.size(); i++){
+                    for (int j = 0; j < gunsAlien[i].getBulletCount(); j++) gunsAlien[i].deleteBullet(j);
+                    itGunAlien = gunsAlien.begin()+i;
+                    if (gunsAlien[i].getBulletCount() == 0) gunsAlien.erase(itGunAlien);
+                }
+                for (int i = 0; i < gunsBoss.size(); i++){
+                    for (int j = 0; j < gunsBoss[i].getBulletCount(); j++) gunsBoss[i].deleteBullet(j);
+                    itGunBoss = gunsBoss.begin()+i;
+                    if (gunsBoss[i].getBulletCount() == 0) gunsBoss.erase(itGunBoss);
+                }
+                countAnimBoom++;
+                if (countAnimBoom > 10){
+                    pboom.setScale(0.5,0.5);
+                    countAnimBoom = 1;
+                    scoreCount = 0;
+                    ScorePoints.setString("00000");
+                    dmg = 1;
+                    gunCount = 1;
+                    gunUpScale_y = 50;
+                    gunUpScale_x = 30;
+                    countLvlUp = 1;
+                    GameWin = false;
+                    player.setPosition(Vector2f(100, 540));
+                    for (int i = 0; i < nmeteors; i++) meteors[i].restart();
+                }
+
+            }
+        }
+        else {
             //Background animation
             gameBackground.move(-0.5 * timeBackground, 0);
             pos = gameBackground.getPosition();
@@ -218,7 +451,7 @@ int main()
             if (pos.x < -1920) gameBackground2.setPosition(1920, pos.y);
 
             //Make Alien
-            if (clockAliens.getElapsedTime() > milliseconds(7000)){
+            if (clockAliens.getElapsedTime() > milliseconds(upGenAlien)){
                 clockAliens.restart();
                 Alien* alien = new Alien;
                 alien->setTextureM(alienTexture);
@@ -275,7 +508,7 @@ int main()
                             itDir = directionAlien.begin()+l;
                             guns[i].deleteBullet(j);
                             if (aliens[l]->getHp() - dmg <= 0) {
-                                scoreCount += 300;
+                                scoreCount += 200;
                                 thisIt++;
 //                                delete aliens[i];
                                 aliens.erase(itAliens);
@@ -334,24 +567,39 @@ int main()
 
             //Lvl up
             if (scoreCount >= 99999) GameOver = true;
-            else if (scoreCount >= 10000  && countLvlUp == 4){
+            else if (scoreCount >= 50000  && countLvlUp == 6){
+                BossFight = true;
+                countLvlUp++;
+            }
+            else if (scoreCount >= 15000  && countLvlUp == 5){
                 gunCount++;
+                upGenAlien -= 1500;
+                countLvlUp++;
+                gunUpScale_y -= 7;
+            }
+            else if (scoreCount >= 5000  && countLvlUp == 4){
+                dmg++;
+                gunCount++;
+                upGenAlien -= 1500;
                 countLvlUp++;
                 gunUpScale_y -= 7;
             }
             else if (scoreCount >= 2000 && countLvlUp == 3){
                 dmg++;
+                upGenAlien -= 1500;
                 gunCount++;
                 countLvlUp++;
                 gunUpScale_y -= 7;
             }
             else if (scoreCount >= 1000 && countLvlUp == 2){
                 gunCount++;
+                upGenAlien -= 1000;
                 gunUpScale_y -= 7;
                 countLvlUp++;
             }
             else if (scoreCount >= 500 && countLvlUp == 1){
                 gunCount++;
+                upGenAlien -= 1000;
                 countLvlUp++;
             }
 
@@ -392,14 +640,20 @@ int main()
         window.clear();
         window.draw(gameBackground2);
         window.draw(gameBackground);
+        window.draw(herosprite);
         for (int i = 0; i < guns.size(); i++) guns[i].draw(window);
         for (int i = 0; i < gunsAlien.size(); i++) gunsAlien[i].draw(window);
         for (int i = 0; i < nmeteors; i++) meteors[i].draw(window);
         for (int i = 0; i < aliens.size(); i++) aliens[i]->draw(window);
         if (GameOver) window.draw(pboom); else window.draw(player);
-        window.draw(herosprite);
+        if (BossFight){
+            bossAlien.draw(window);
+            for (int i = 0; i < gunsBoss.size(); i++) gunsBoss[i].draw(window);
+            window.draw(HpBarBoss);
+        }
         window.draw(Score);
         window.draw(ScorePoints);
+        if (GameWin) window.draw(Win);
         window.display();
     }
 

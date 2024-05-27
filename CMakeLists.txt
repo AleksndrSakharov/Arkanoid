@@ -4,22 +4,14 @@ project(Arkanoid)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 add_executable(Arkanoid main.cpp
-        Arkanoid.h
         Arkanid.cpp
         Meteor.cpp
-        Meteor.h
-        Base_object.h
         Base_object.cpp
         Alien.cpp
-        Alien.h
         Gun.cpp
-        Gun.h
-        Gun_alien.cpp
-        Gun_alien.h
         Boss_alien.cpp
-        Boss_alien.h
         Gun_boss.cpp
-        Gun_boss.h
+        Gun_alien.cpp
 )
 
 

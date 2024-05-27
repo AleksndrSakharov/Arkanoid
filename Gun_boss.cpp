@@ -25,7 +25,7 @@ Gun_boss::Gun_boss(int dmg, int gunCount, Vector2f pos) {
         _bullet.push_back(bullet);
         _bullet[i].setSize(Vector2f(10, 10));
         _bullet[i].setFillColor(Color::Red);
-        _bullet[i].setPosition(Vector2f (pos.x, pos.y - 100 + posDelta));
+        _bullet[i].setPosition(Vector2f (pos.x, pos.y - 940 + posDelta));
         posDelta += 10;
     }
 }

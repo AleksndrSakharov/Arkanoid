@@ -49,7 +49,8 @@ void Boss_alien::setTextureM(sf::Texture &texture1) {
 void Boss_alien::restart() {
     _hp = 10000;
     float x1 = static_cast<float>(2000);
-    float y1 = static_cast<float>(100);
+    float y1 = static_cast<float>(950);
     _SpaceObject.setPosition(Vector2f(x1, y1));
+    _SpaceObject.setRotation(-90.f);
     _SpaceObject.setScale(2, 2);
 }

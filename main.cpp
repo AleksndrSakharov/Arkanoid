@@ -110,8 +110,8 @@ int main()
     //Gun
     std::vector<Gun> guns;
     std::vector<Gun>::iterator itGun;
-    int dmg = 3;
-    int gunCount = 5;
+    int dmg = 1;
+    int gunCount = 1;
     int lastIt = 0;
     int thisIt = 0;
     float gunUpScale_x = 30;
